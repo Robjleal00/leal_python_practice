@@ -49,27 +49,54 @@ grayscale = np.array([217.56944444, 218.82291667, 219.89236111, 220.19444444,
 
 
 # Resize the image according to its new width and height (using the variables provided to us above
+# Maybe i will skip it for now
+
+# Convert the image to grayscale
+def grayscale_converter(image):
+    arr = pg.surfarray.array3d(image)
+    # luminosity filter
+    avgs = [[(r * 0.298 + g * 0.587 + b * 0.114) for (r, g, b) in col] for col in arr]
+    arr = np.array([[[avg, avg, avg] for avg in col] for col in avgs])
+    return pg.surfarray.make_surface(arr)
+
+
+# Converting each pixel to a string of ASCII characters
+def get_char_for_value(val, min_val, max_val, char_list, char_grayscale):
+    # The height to width ratio given to us in the template is 20/12.
+    # Given that our chosen patch width is 6, this ration yields us 10 for th e patch height
+    patch_width = 6
+    patch_height = 10
+    # I am assuming we cannot use patchify :/ otherwise this would be a bag
+
+    ind = 0
+    return char_list[ind]
 
 
 def _main():
-    # trying to load an image given the path from the user
-    path = input("images/asciiart.png")
+    pg.init()
+
+    path = "images/asciiart.png"
 
     try:
         image = pg.image.load(path)
     except:
-        print(path, "This is not a valid path name.")
+        print(path, " is not a valid path for the image")
 
-    pg.init()
+    window = (900, 700)
+    screen = pg.display.set_mode(window)
 
-    pg.Surface = pg.display.set_mode((800, 700))
+    image = grayscale_converter(image)
+
+    screen.blit(image, (100, 100))
+
+    pg.display.flip()
     done = False
     while not done:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 done = True
-        pg.Surface.blit(image, (100, 100))
-        pg.display.flip()
+
+    pg.quit()
 
 
 if __name__ == '__main__':
